@@ -1,0 +1,1104 @@
+@charset "utf-8";
+/* ↑ このCSSファイルの文字コード宣言。1行目に書く。日本語のコメントが化けないため */
+
+/* =========================================================
+   チーズアカデミー
+
+   ■ 全体の方針
+   ・中身は最大1200pxで中央（.inner）。窓が狭ければ窓に合わせて縮む（レスポンシブ）
+   ・ABOUTの画像帯／COURSEの行／地図だけ画面幅いっぱい（.inner の外に出してある）
+
+   ■ 色（完成見本の画像から実際に色を拾ったもの）
+   #222222  本文の文字
+   #ffd61a  アクセント（ABOUT・NEWSの見出し、ボタン）
+   #fafafa  薄い背景（COURSEの文章側、ACCESS全体）
+   #bfbfbf  フォームの枠線
+   #707070  フッターの背景
+
+   ■ 余白
+   60px と 30px の2種類で組んである（仕様書の数値がこの繰り返しだったため）
+
+   ■ ファイルの構成
+   1〜10  … PC幅（1200px）の指定。まずこれを読む
+   11     … レスポンシブ（窓が狭いときの上書き）。一番下にまとめてある
+
+   ■ CSSの基本ルール
+   ・後に書いたほうが勝つ（だから reset.css を先に読み込む／@media を一番下に置く）
+   ・1か所でも書き間違えると、そこから下が全部読まれなくなる
+     → 「CSSが効かない」ときは、まず上のほうの書き間違いを疑う
+   ========================================================= */
+
+
+/* =========================================================
+   0. 用語の読み方（初めて見る書き方はここを見る）
+   =========================================================
+
+   ■ CSSの1かたまりの呼び方
+
+   .ttl { font-size: 24px; }
+   └┬┘   └───┬───┘  └─┬─┘
+   セレクタ    プロパティ    値
+   （誰に）    （何を）     （どうする）
+
+   ・セレクタ … 効かせる相手。. はクラス、# は id、何も無ければタグ名
+   ・プロパティと値は : で区切り、1行ごとに ; で終える
+   ・{ } で囲んだ全体を「ルール」と呼ぶ
+
+   ■ 長さの単位
+
+   px  … 画面上の点の数。固定。16px なら常に16px
+   %   … 「親の大きさに対する割合」。★基準は常に親
+         width: 100%  → 親と同じ幅
+         width: 50%   → 親の半分
+   em  … 「その要素の font-size に対する倍率」
+         font-size: 16px のとき 0.08em = 1.28px
+   auto… ブラウザに計算させる。margin で使うと中央寄せになる
+
+   ■ 色の書き方（全部同じ赤）
+
+   #ff0000           16進数。6桁で「赤 緑 青」を2桁ずつ。00が最小、ffが最大
+   #f00              上の省略形。各桁が同じ値なら3桁で書ける
+   rgb(255, 0, 0)    0〜255の数値で指定
+   rgba(255,0,0,0.5) 末尾は透明度。0=透明、1=不透明
+   red               色名。使えるのは決まった色だけ
+
+   ★ #222222 は「赤34 緑34 青34」＝ほぼ黒のグレー。
+     3色が同じ値だと必ずグレーになる（#fff=白、#000=黒、#888=中間のグレー）
+
+   ■ よく出る値のキーワード
+
+   none    … 無し／打ち消す
+   auto    … ブラウザに任せる
+   inherit … 親から受け継ぐ
+   0       … ゼロのときだけ単位を書かなくてよい（0px でも同じ）
+
+   ■ display ― 要素の振る舞い方。CSSで一番つまずくところ
+
+                    block        inline       inline-block
+   並び方            縦に積む     横に流れる    横に流れる
+   横幅              親いっぱい   中身のぶん    中身のぶん
+   width / height   効く         ★効かない    効く
+   margin 上下       効く         ★効かない    効く
+
+   ★ タグごとの初期値（このページで実際に測った結果）
+     block        … div / p / h1〜h6 / ul / section / header / footer
+                    nav / form / dl / dt / dd
+     inline       … a / span / img / label / iframe
+     inline-block … input / select / textarea / button
+     list-item    … li（block の一種。黒丸が付く）
+
+   ★ img と iframe が inline なので、何も指定しないと「文字扱い」になり
+     下に3〜5pxの隙間ができる。だから display: block か
+     vertical-align: bottom を指定している箇所が多い。
+
+   ■ 親・子
+
+   <section>          ← .inner の【親】
+     <div class="inner">   ← section の【子】
+       <h2>                ← section の【孫】
+
+   ★ width の % は、必ず【親の幅】に対する割合。
+   ★ block は何も指定しなくても親の幅いっぱいに広がる（width の初期値が auto）。
+     section に width を書いていないのに幅があるのはこのため。
+   ========================================================= */
+
+
+/* =========================================================
+   1. 全体の土台
+   ========================================================= */
+
+/* ページ全体を包む箱。仕様書で指定されている構成 */
+.wrap {
+  overflow-x: hidden;
+  /* ★ overflow ＝「あふれる」。箱からはみ出した中身をどう扱うかの指定。
+     　 overflow-x … 横方向だけ
+     　 overflow-y … 縦方向だけ
+     　 overflow   … 両方
+
+     値は4つ。
+     　visible … はみ出したまま見せる（初期値）
+     　hidden  … はみ出した部分を隠す。スクロールもできない
+     　scroll  … その箱の中にスクロールバーを出す
+     　auto    … はみ出したときだけスクロールバーを出す
+
+     ここで hidden にしているのは保険。
+     どこか1か所でも計算が合わずに数px飛び出すと、
+     ページ全体に横スクロールバーが出てしまうのを防ぐ。
+
+     ★ 以前はここに min-width: 1200px を書いていたが、
+        レスポンシブにしたので外した。
+        min-width があると「窓に合わせて縮む」ができなくなるため */
+}
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  /* ★ font-family ＝ 書体の指定。カンマ区切りで候補を並べる。
+     　 ブラウザは左から順に「このフォントが入っているか」を調べ、
+     　 最初に見つかったものを使う（フォールバックという）。
+
+     　 "Hiragino Kaku Gothic ProN" … Macに入っているゴシック体
+     　 "Meiryo"                    … Windowsに入っているゴシック体
+     　 sans-serif                  … 総称名。下の説明を参照
+
+     ★ 名前に空白が入るものは " " で囲む。囲まないと別々の単語と解釈される。
+       sans-serif は固有の書体名ではないので囲まない。
+
+     ★ 一番右に置く「総称名」は、どれも無かったときの最後の受け皿。
+       ここだけは全ての環境で必ず何かに割り当たる。
+       　sans-serif … ゴシック体（線の端に飾りが無い）
+       　serif      … 明朝体（線の端に飾りがある）
+       　monospace  … 等幅。全ての文字の幅が同じ。コード表示用
+
+     ★ 「sans」はフランス語で「〜が無い」。serif（飾り）が無い、という意味 */
+
+  color: #222222;
+  /* 文字色。#222222 はほぼ黒のグレー。
+     真っ黒（#000000）より少し薄くすると目が疲れにくい。
+     16進数の読み方は上の「0. 用語の読み方」を参照 */
+
+  font-size: 16px;
+  /* ★ 本文の基準サイズ。16px はブラウザの初期値でもあり、
+     日本語の本文では最も読みやすいとされる大きさ */
+
+  line-height: 2;
+  /* 行の高さ。単位なしの 2 は「font-size の2倍」の意味。
+     ★ 単位なしで書くこと。"32px" と書くと子要素が文字サイズを変えたときに崩れる */
+}
+
+img {
+  max-width: 100%;
+  /* ★ レスポンシブの基本。「親からはみ出すな」。
+     窓が狭くなると画像も自動で縮む */
+
+  height: auto;
+  /* 幅が縮んだとき、高さも比率どおりに縮める。
+     ★ これが無いと高さが元のままで、画像が潰れる */
+
+  vertical-align: bottom;
+  /* ★ 画像の下にできる3〜5pxの謎の隙間を消す。
+     <img> は初期状態では「文字」の扱い（inline）。
+     文字には g や y の尻尾のための余白が下にあり、画像もそこに揃えられてしまう。
+     bottom にすると、尻尾の位置ではなく底に揃うので隙間が消える */
+}
+
+a {
+  text-decoration: none;
+  /* ★ text-decoration ＝ 文字に引く線。
+     　 none        … 線なし（リンクの下線を消すのはこれ）
+     　 underline   … 下線
+     　 line-through… 取り消し線
+     リンクは初期状態で underline が付いているので、none で消している */
+
+  color: inherit;
+  /* inherit ＝ 親から受け継ぐ。
+     指定しないとリンクが青（ブラウザの初期色）になる */
+}
+
+/* ★★ 中身を中央に置く箱。各セクションで使い回す。レスポンシブの心臓部 */
+.inner {
+  width: 100%;
+  /* ★ % の基準は「親の幅」。.inner の親は section なので、section と同じ幅になる。
+     px のような固定値ではなく、親に合わせて伸び縮みする */
+
+  max-width: 1200px;
+  /* ★ max-width ＝ 上限。これ以上は広がらない。
+     　 min-width … 下限。これ以上は狭くならない
+     　 width     … ぴったりその幅。伸びも縮みもしない
+
+     ★ width: 1200px ではなく max-width: 1200px。
+     　 width  … 必ずその幅。窓が900pxでも1200pxのまま（はみ出す）
+     　 max-width … 「1200pxまで」。窓が900pxなら900pxに縮む
+     レスポンシブはこの1行の違いから始まる */
+
+  margin: 0 auto;
+  /* margin の値が2つのときは「上下 / 左右」。
+     左右を auto にすると、余ったぶんが左右で等分される ＝ 中央に来る */
+
+  padding: 0 20px;
+  /* 窓が狭いとき、文字が画面の端にくっつかないようにする余白 */
+
+  box-sizing: border-box;
+  /* ★ これが無いと 100% + 左右20px ずつ ＝ はみ出す */
+}
+
+
+/* =========================================================
+   2. セクション共通の見出し
+   ========================================================= */
+
+/* ★ 見出しの基本形。COURSE・Access・CONTACT はこれだけで足りる */
+.ttl {
+  font-size: 24px;
+
+  font-weight: bold;
+  /* ★ font-weight ＝ 文字の太さ。
+     　 normal(=400) … 普通
+     　 bold(=700)   … 太字
+     　 100〜900 の数値でも指定できる（フォントが対応していれば）
+
+     ★ reset.css が font-weight もリセットしているので、
+     h2 と書いても自動では太くならない。自分で指定する */
+
+  text-align: center;
+  /* ★ text-align ＝ 中の「文字」の横方向の揃え。
+     　 left / center / right / justify（両端揃え）
+
+     ★ よくある勘違い：これは箱そのものを動かすものではない。
+       箱を中央に置きたいときは margin: 0 auto のほう。
+       text-align は「箱の中の文字をどこに寄せるか」 */
+
+  letter-spacing: 0.08em;
+  /* 文字と文字の間隔。em ＝ その要素の font-size を1とした倍率。
+     24px の 0.08em なので 1.92px ぶん広がる。
+     ★ px で書くと文字サイズを変えたときに比率が崩れるので em を使う */
+}
+
+/* ★ ABOUT と NEWS だけ、この色を上乗せする（完成見本から色を拾って確認した）
+
+   HTML側： <h2 class="ttl ttl--accent">ABOUT</h2>
+                      └┬┘ └───┬────┘
+                      基本形   違うところだけ
+   半角スペースで区切ると、2つのクラスを同時に付けられる。
+   .ttl が効いたあと、後に書いた .ttl--accent が色だけ上書きする。
+
+   ■ 名前の付け方の決まり（BEMという命名規則）
+   　-   … 単語をつなぐだけ（.news-item .course-row）
+   　--  … 「基本形に上乗せする用」の目印（.ttl--accent）
+   ★ -- にブラウザ上の意味は無い。人間が読むための取り決め。
+     - が「単語つなぎ」で既に埋まっているので、2つ重ねて見分けている。
+
+   ■ なぜ --yellow ではなく --accent にしたか
+   この黄色は見出しだけでなく .btn の背景と .nav a:hover でも使っている、
+   サイト共通の強調色。「たまたま黄色」ではなく「強調色」という役割を名前に残した。
+   色を変えても名前が嘘にならない */
+.ttl--accent {
+  color: #ffd61a;
+}
+
+/* 見出しの下の日本語の小さい行。
+   ★ これは .ttl の派生ではなく別物なので、ハイフン1つ（単語つなぎ）でよい */
+.ttl-ja {
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+
+/* =========================================================
+   3. ヘッダー
+   ★ Flexbox の1つめの見本。「左右に離す」パターン
+   ========================================================= */
+
+.header-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  height: 120px;
+
+  display: flex;
+  /* ★ これを「親」に書くと、中の子（ロゴとナビ）が横に並ぶ。
+     子に書くのではない。ここを間違えやすい */
+
+  justify-content: space-between;
+  /* 横方向の配置。space-between ＝ 両端に離して、間を空ける。
+     他の値： flex-start（左寄せ・初期値）／ center（中央）／ flex-end（右寄せ） */
+
+  align-items: center;
+  /* 縦方向の配置。center ＝ 上下まんなか。
+     初期値は stretch（高さいっぱいに伸びる） */
+}
+
+.logo img {
+  width: 381px;
+  /* header_logo.png の原寸がちょうど381×80 */
+
+  max-width: 100%;
+  /* 窓が狭いときは縮む */
+}
+
+.nav ul {
+  display: flex;
+  /* ★ <li> は初期状態では縦に積まれる（block）。
+     親の <ul> に display:flex を付けると横並びになる */
+
+  gap: 55px;
+  /* 子どうしの隙間。
+     ★ margin で隙間を作ると最後の1つの右にも余白が付くが、
+     gap は「間だけ」に効く。端には付かない */
+}
+
+.nav a {
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  /* ★ white-space ＝ 文字の折り返しと、連続した空白の扱い。
+     　 normal … 幅が足りなければ折り返す（初期値）。連続した空白は1つにまとめられる
+     　 nowrap … 折り返さない。幅が足りなければはみ出す
+     　 pre    … 書いたとおりの改行と空白をそのまま表示する
+
+     ここでは「ABOUT」などのメニュー項目が
+     途中で2行に割れないようにするために nowrap にしている */
+}
+
+.nav a:hover {
+  color: #ffd61a;
+  /* :hover ＝ マウスが乗っているときだけ適用される */
+}
+
+
+/* =========================================================
+   4. メインビジュアル
+   ★ 写真の上に文字を乗せるパターン
+   ========================================================= */
+
+.mainvisual {
+  height: 500px;
+  /* mainbg.png の原寸が1365×500 */
+
+  background-image: url(../img/mainbg.png);
+  /* ★ url() ＝ CSSからファイルの場所を指す書き方。画像・フォントなどで使う。
+     中のパスは " " で囲んでも囲まなくてもよい。
+
+     ★ パスの書き方（ファイルの場所の指し方）
+     　 ./ファイル   … 同じフォルダの中（./ は省略できる）
+     　 ../ファイル  … 1つ上のフォルダに戻ってから
+     　 /ファイル    … サイトの一番上から（ルート相対）
+     　 https://…   … 他のサイトから
+
+     ★ 先頭の .. に注意。
+     このCSSは css/ フォルダの中にいるので、
+     img/ に行くには一度上の階層に戻る必要がある。
+
+     　 html_sato_00/
+     　 ├ index.html      ← HTMLはここ。だから img/mainbg.png
+     　 ├ css/style.css   ← CSSはここ。だから ../img/mainbg.png
+     　 └ img/mainbg.png
+
+     ★ HTMLとCSSで書き方が変わる。ここは間違えやすい */
+
+  background-size: cover;
+  /* ★ 背景画像を枠にどう収めるか。
+     　 cover   … 枠を埋めきるまで拡大。はみ出した部分は切れる（写真の背景はほぼこれ）
+     　 contain … 全体が見えるように収める。余白ができる
+     　 auto    … 原寸（初期値）。足りなければタイルのように繰り返される */
+
+  background-position: center;
+  /* ★ 背景画像のどこを枠に合わせるか。cover で切れるときに「どこを残すか」を決める。
+     　 center / top / bottom / left / right、「top left」のように2つ並べてもよい
+     　 「50% 50%」のように数値でも書ける（center と同じ） */
+
+  display: flex;
+  justify-content: center;   /* 左右まんなか */
+  align-items: center;       /* 上下まんなか */
+  /* ★ 補足資料の「ブラウザ幅に合わせて文字位置が中央に維持される」はこの3行。
+     px で位置を指定していないので、幅が変わっても中央のまま */
+
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.mainvisual-text {
+  text-align: center;
+  color: #ffffff;
+
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  /* 文字の影。「横ずれ 縦ずれ ぼかし 色」の順。
+     ★ 写真の明るい部分に白文字が重なると読めなくなるので、影で輪郭を出す。
+     rgba の4つめは透明度（0〜1）。0.45 ＝ 45%の濃さ */
+}
+
+.mv-main {
+  font-size: 48px;    /* 補足資料の指定 */
+  font-weight: bold;
+  line-height: 1.5;
+  /* body の line-height: 2 のままだと、48pxの文字では行間が空きすぎる */
+}
+
+.mv-sub {
+  font-size: 32px;    /* 補足資料の指定 */
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   5. ABOUT
+   ========================================================= */
+
+.about {
+  padding-top: 80px;
+}
+
+.about-text {
+  text-align: center;
+  /* ★ 親に書けば中の <p> 全部に効く。
+     文字に関する指定（色・サイズ・揃え）は子に受け継がれる。
+     幅や余白は受け継がれない */
+
+  margin-top: 60px;
+}
+
+.about-text p {
+  margin-bottom: 30px;
+  /* ★ 段落ごとに下へ30pxあける。これが無いと文章がべたっと続く */
+}
+
+.about-text p:last-child {
+  margin-bottom: 0;
+  /* ★ 最後の段落だけ余白を消す。
+     :last-child ＝ 兄弟の中で最後のもの */
+}
+
+/* 画像4枚の帯。.inner の外にあるので画面幅いっぱい */
+.about-images {
+  display: flex;      /* 4枚を横に並べる */
+  flex-wrap: wrap;    /* ★ 狭いときに折り返せるようにしておく（2×2になる） */
+  margin-top: 80px;
+}
+
+.about-images img {
+  width: 25%;
+  /* ★ 25% ＝ 4枚で1行（25×4=100%）。下の @media で 50% に変えると 2枚で1行になる。
+
+     ★ flex: 1 ではなく % にした理由は「読みやすさ」だけ。
+       この場面では flex: 1 でも結果は同じになる（実際に測って確認した）。
+       % なら「25%＝4枚」「50%＝2枚」と数字から1行の枚数が読み取れる。
+
+     ★ 2つの違いが出るのは gap があるとき
+       flex: 1    … gap を引いた残りを等分する（はみ出さない）
+       width: 25% … gap を考えない。25%×4 + gap が100%を超えて折り返す
+       .about-images には gap が無いので、ここでは同じ結果になる */
+
+  object-fit: cover;
+  /* ★ 枠の形に合わせて画像を切る。
+     これが無いと、幅が変わったときに縦横比が崩れて間延びする */
+
+  height: 255px;
+  /* 原寸の高さ。4枚の高さをそろえる */
+}
+
+
+/* =========================================================
+   6. COURSE
+   ★ 今回いちばんの見どころ。row-reverse で左右を入れ替える
+   ========================================================= */
+
+.course {
+  padding-top: 80px;
+}
+
+.course-lead {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 80px;
+}
+
+/* 画像と文章の行。.inner の外なので画面幅いっぱい */
+.course-row {
+  display: flex;
+}
+
+/* ★★ 2つめだけ、画像と文章の左右を入れ替える */
+.course-row.reverse {
+  /* ！！ここ重要だ！！
+     ★ セレクタにスペースが無いことに注意。
+     「.course-row と .reverse の両方のクラスが付いた要素」という意味。
+     スペースを入れて .course-row .reverse と書くと
+     「course-row の中にある reverse」になってしまい、別物 */
+
+  flex-direction: row-reverse;
+  /* ★ 並ぶ向きを右→左にする。
+     HTMLは3行とも同じ順番（画像 → 文章）で書いてあるのに、
+     この1行だけで見た目が左右逆になる。
+
+     値： row（左→右・初期値）／ row-reverse（右→左）
+          column（上→下）／ column-reverse（下→上）
+
+     HTMLを書き換えないのが利点。
+     読み上げソフトや検索エンジンが読む順番はHTMLのままなので、構造を壊さない */
+}
+
+.course-img {
+  width: 50%;
+}
+
+.course-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 文章側が長くなっても、画像が同じ高さまで伸びて隙間ができない */
+}
+
+.course-body {
+  width: 50%;
+
+  background: #fafafa;
+  /* ★ background は「まとめ書き（ショートハンド）」。
+     　 background-color  … 背景色
+     　 background-image  … 背景画像
+     　 background-size / -position / -repeat … 画像の大きさ・位置・繰り返し
+     この6つをまとめて1行で書けるのが background。
+
+     色だけ指定したいなら background-color: #fafafa と書くのが厳密だが、
+     background: #fafafa でも同じ結果になるので、実務ではこちらが多い。
+
+     ★ ただしまとめ書きは「書かなかった項目が初期値に戻る」性質がある。
+       先に background-image を指定したあとで background: red と書くと、
+       画像が消える。使い分けに注意 */
+
+  padding: 60px 80px;
+  /* 値が2つなので「上下60px / 左右80px」 */
+
+  box-sizing: border-box;
+  /* ★ これが無いと 50% + 左右80px ずつ ＝ はみ出す。
+
+     初期設定では、width は「中身」の幅で、padding と border はその外側に足される。
+     　width 80px + padding 6px×2 + border 1px×2 ＝ 実際には94px
+     border-box にすると、指定した数字が枠線まで込みの見た目の幅になる。
+
+     ★ 「指定より大きくなる」ときは、ほぼこれが原因 */
+
+  /* ↓ 文章を上下まんなかに置く */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* ★ ここが分かりにくいところ。
+     flex-direction: column にすると、justify-content と align-items の担当が入れ替わる。
+
+     　　　　　　　　　　row（横並び）  column（縦並び）
+     justify-content      横方向          縦方向   ← 今はこちら
+     align-items          縦方向          横方向
+
+     「主軸」の向きが変わるため */
+}
+
+.course-body h3 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.course-body p {
+  font-size: 16px;
+}
+
+
+/* =========================================================
+   7. NEWS
+   ========================================================= */
+
+.news {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.news-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  /* ★ 狭いときに折り返す。3枚 → 2枚 → 1枚と自動で減る */
+
+  gap: 30px;
+  margin-top: 60px;
+}
+
+.news-item {
+  width: 300px;
+  /* news_img.jpg の原寸が300×200 */
+
+  max-width: 100%;
+  /* 窓が300pxより狭くてもはみ出さない */
+}
+
+.news-item img {
+  display: block;
+  width: 100%;
+}
+
+.news-date {
+  font-size: 14px;
+  margin-top: 30px;
+}
+
+.news-body {
+  font-size: 14px;
+}
+
+.news-more {
+  text-align: center;
+  margin-top: 60px;
+  /* ★ ボタン自身ではなく、親の箱に text-align:center を書く。
+     .btn は inline-block なので「文字」として扱われ、親の指定で中央に寄る */
+}
+
+/* More と 送信 の両方で使い回す黄色いボタン */
+.btn {
+  display: inline-block;
+  /* ★★ これが無いと <a> のほうは width も height も無視される。
+
+     .btn は2つのタグで共用している。初期の display が違う。
+     　<a>      … inline       → 幅も高さも指定できない
+     　<button> … inline-block → もともと箱として扱われる
+
+     ★ 実際に外して測った結果
+     　<a class="btn">More</a>        → 43×27px に潰れる
+     　<button class="btn">送信</button> → 300×60px のまま
+
+     つまり必要なのは <a> のためだが、
+     2つのタグの振る舞いを揃えるために書いておく。
+
+     inline-block ＝「横には並ぶが、箱として大きさを持てる」 */
+
+  width: 300px;
+  max-width: 100%;
+  height: 60px;
+  line-height: 60px;
+  /* ★ 文字を上下まんなかに置く古典的な方法。
+     行の高さを箱の高さと同じにすると、1行の文字は中央に来る */
+
+  background: #ffd61a;
+  color: #ffffff;
+  font-size: 18px;
+  text-align: center;
+
+  border: none;
+  /* <button> には初期状態で枠線と背景が付いているので消す */
+
+  cursor: pointer;
+  /* マウスを乗せたときに指の形になる */
+
+  font-family: inherit;
+  /* ★ <button> の中の文字だけブラウザ既定のフォントになってしまう。
+     inherit（親から受け継ぐ）で body の指定に揃える */
+}
+
+.btn:hover {
+  opacity: 0.8;
+  /* 不透明度。0.8 ＝ 少し薄くなる。押せることが伝わる */
+}
+
+
+/* =========================================================
+   8. ACCESS
+   ★ dl を2列に折り返すパターン
+   ========================================================= */
+
+.access {
+  background: #fafafa;
+  padding-top: 80px;
+}
+
+/* 地図は画面幅いっぱい */
+.map {
+  margin-top: 60px;
+}
+
+.map iframe {
+  display: block;
+  /* ★ <iframe> も初期状態は inline なので、
+     指定しないと下に隙間が出る。<img> と同じ理由 */
+
+  width: 100%;
+  height: 400px;
+
+  border: 0;
+  /* ★ Googleのコピペでは style="border:0;" としてHTMLに書かれている。
+     見た目の指定なのでCSSに移した。
+     インラインの style="..." はクラスより優先されるため、
+     HTMLに残したままだとここから枠線を変えられなくなる */
+}
+
+.access-list {
+  display: flex;
+  flex-wrap: wrap;
+  /* ★ 「幅が足りなければ次の行に送る」 */
+
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  box-sizing: border-box;
+}
+
+.access-list dt {
+  width: 180px;
+  margin-bottom: 14px;
+}
+
+.access-list dd {
+  width: calc(100% - 180px);
+  /* ★ calc() ＝ CSSの中で計算する。
+     「親の幅から dt の180pxを引いた残り」。
+     固定の520pxにすると、窓が狭いときに折り返してしまう */
+
+  margin-bottom: 14px;
+  /* ★ dt 180px + dd 残り全部 ＝ ちょうど1行。
+     だから3つめ（次の dt）は入りきらず次の行に折り返す。
+     結果として「項目名 / 内容」が2列に並ぶ。
+     <table> を使わずに表組みを作っている */
+}
+
+
+/* =========================================================
+   9. CONTACT（フォーム）
+   ★ 1行＝1つのFlexbox
+   ========================================================= */
+
+.contact {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.contact-lead {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.contact-note {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.form {
+  width: 100%;
+  max-width: 568px;
+  /* ラベル240 + 入力328 = 568 */
+
+  margin: 80px auto 0;
+  /* 値が3つのときは「上 / 左右 / 下」。
+     margin / padding の値の数の読み方：
+     　1つ … 四方すべて
+     　2つ … 上下 / 左右
+     　3つ … 上 / 左右 / 下
+     　4つ … 上 / 右 / 下 / 左（時計回り） */
+}
+
+.form-row {
+  display: flex;
+  /* 左にラベル、右に入力欄。ヘッダーと同じ考え方 */
+
+  margin-bottom: 30px;
+}
+
+.form-row label,
+.form-row .form-label {
+  /* ★ カンマ区切り ＝ 「または」。2つのセレクタに同じ指定をまとめている */
+
+  width: 240px;
+
+  flex-shrink: 0;
+  /* ★ Flexboxの中では、幅が足りないと子が勝手に縮む。
+     0 を指定すると「縮むな」の意味になり、240pxを保つ */
+
+  line-height: 1.6;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row select,
+.form-row textarea {
+  /* ★ 属性セレクタ。
+     <input> は text も email も checkbox も全部同じ input タグなので、
+     [type="..."] で区別する。
+     これを書かずに input とだけ書くと、チェックボックスまで幅が広がる */
+
+  width: 100%;
+  max-width: 328px;
+  border: 1px solid #bfbfbf;
+  /* 「太さ 種類 色」の順。solid ＝ 実線 */
+
+  box-sizing: border-box;
+  /* 枠線を幅の内側に収める */
+
+  font-family: inherit;
+  /* ★ フォーム部品は body のフォント指定を受け継がない。
+     書かないとフォームだけ別のフォントになって浮く */
+
+  font-size: 16px;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row select {
+  height: 36px;
+  padding: 0 8px;
+}
+
+.form-row textarea {
+  padding: 8px;
+  /* 高さはHTML側の rows="6" で決めている */
+}
+
+/* 志望動機の選択肢を縦に積む */
+.checks {
+  display: flex;
+  flex-direction: column;
+  /* ★ 「flexは横並び」ではない。「並べる向きを決められる」が正しい */
+
+  gap: 20px;
+}
+
+.checks label {
+  width: auto;
+  /* ★ 上で .form-row label に width:240px を指定したので、
+     その中にあるチェックボックスのラベルまで240pxになってしまう。
+     auto（＝中身に合わせる）で打ち消している。
+
+     ★ CSSは後に書いたほうが勝つので、この指定は .form-row label より下に置く必要がある */
+
+  display: flex;
+  align-items: center;
+  /* チェックボックスの四角と文字の高さを揃える */
+
+  gap: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.checks input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  /* 文字が長いとチェックボックスが潰れるので、縮まないようにする */
+}
+
+.form-submit {
+  text-align: center;
+  margin-top: 60px;
+}
+
+
+/* =========================================================
+   10. フッター
+   ★ 「箱の中で上下左右まんなか」の定番
+   ========================================================= */
+
+.footer {
+  min-height: 140px;
+  /* height ではなく min-height。
+     狭い画面で文字が2行になったとき、箱が伸びてくれる */
+
+  background: #707070;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+
+  display: flex;
+  justify-content: center;   /* 左右まんなか */
+  align-items: center;       /* 上下まんなか */
+  /* ★ この3行が「高さのある箱の中央に置く」の定番 */
+}
+
+
+/* =========================================================
+   11. ★★ レスポンシブ（窓が狭いときだけの上書き）
+
+   @media (max-width: ○○px) { ... }
+     ＝「窓の幅が○○px以下のときだけ、この中の指定を使う」
+
+   ■ 必ず一番下に書く
+     CSSは後に書いたほうが勝つため。上に書くと、下の通常指定に上書きされて効かない。
+
+   ■ 上から広い順に並べる
+     1024 → 768 → 480 の順。狭い条件ほど後に書く。
+     窓が400pxのときは3つとも条件に当てはまるので、一番下の480pxの指定が最後に勝つ。
+
+   ■ 区切りの数字（ブレイクポイント）
+     1024px … 小さいノートPC・タブレット横
+      768px … タブレット縦
+      480px … スマホ
+     厳密な決まりは無い。「崩れ始めたところで区切る」が実務の考え方。
+   ========================================================= */
+
+
+/* ---------- 1024px以下：タブレット横・小さいノートPC ---------- */
+@media (max-width: 1024px) {
+
+  .nav ul {
+    gap: 30px;        /* 55px では入りきらないので詰める */
+  }
+
+  .logo img {
+    width: 280px;     /* ロゴを小さくしてナビの場所をあける */
+  }
+
+  .course-body {
+    padding: 40px;    /* 左右80pxでは文章が窮屈になる */
+  }
+
+  .mv-main {
+    font-size: 40px;  /* 48px → 40px */
+  }
+
+  .mv-sub {
+    font-size: 24px;  /* 32px → 24px */
+  }
+}
+
+
+/* ---------- 768px以下：タブレット縦。ここが一番大きく変わる ---------- */
+@media (max-width: 768px) {
+
+  /* ヘッダー：ロゴとナビを縦に積む */
+  .header-inner {
+    height: auto;             /* 120px固定をやめる */
+    padding: 20px;
+    flex-direction: column;   /* 横並び → 縦積み */
+    gap: 16px;
+  }
+
+  .nav ul {
+    flex-wrap: wrap;          /* メニューが入りきらなければ折り返す */
+    justify-content: center;
+    gap: 20px;
+  }
+
+  /* メインビジュアル */
+  .mainvisual {
+    height: 360px;            /* 500px では画面を占領しすぎる */
+  }
+
+  .mv-main {
+    font-size: 28px;
+  }
+
+  .mv-sub {
+    font-size: 18px;
+  }
+
+  /* ABOUT：画像4枚を 2×2 にする */
+  .about-images img {
+    width: 50%;               /* 25% → 50% ＝ 2枚で1行 */
+    height: 200px;
+  }
+
+  /* ★★ COURSE：画像と文章を縦に積む
+     .reverse も同じく縦にする。
+     縦に積むと「左右を入れ替える」意味が無くなるため */
+  .course-row,
+  .course-row.reverse {
+    flex-direction: column;
+  }
+
+  .course-img,
+  .course-body {
+    width: 100%;              /* 50% → 全幅 */
+  }
+
+  .course-img img {
+    height: 240px;            /* 縦積みだと画像が大きすぎるので抑える */
+  }
+
+  .course-body {
+    padding: 40px 20px;
+  }
+
+  /* ACCESS：項目名と内容を縦に積む */
+  .access-list dt,
+  .access-list dd {
+    width: 100%;
+  }
+
+  .access-list dt {
+    margin-bottom: 4px;
+    font-weight: bold;        /* 縦積みだと区別がつきにくいので太字にする */
+  }
+
+  .access-list dd {
+    margin-bottom: 20px;
+  }
+
+  .map iframe {
+    height: 300px;
+  }
+
+  /* ★ フォーム：ラベルを入力欄の上に移す */
+  .form-row {
+    flex-direction: column;   /* 横並び → 縦積み */
+    gap: 8px;
+  }
+
+  .form-row label,
+  .form-row .form-label {
+    width: 100%;              /* 240px固定をやめる */
+  }
+
+  .form-row input[type="text"],
+  .form-row input[type="email"],
+  .form-row select,
+  .form-row textarea {
+    max-width: 100%;          /* 328px固定をやめて全幅に */
+  }
+
+  /* ★ 本文の中の <br> を無効にする。
+     HTMLの <br> は「1200px幅で、ここで改行すると収まりがよい」位置に入れたもの。
+     画面が狭いと、その位置で改行されて不自然な短い行ができる。
+     display: none で <br> 自体を消すと、ブラウザが画面幅に合わせて自然に折り返す。
+     ★ HTMLを書き換えずに済むのが利点 */
+  .about-text br,
+  .course-lead br,
+  .contact-lead br,
+  .contact-note br,
+  .mainvisual-text br {
+    display: none;
+  }
+
+  /* セクションの上下の余白を詰める */
+  .about,
+  .course,
+  .news,
+  .access,
+  .contact {
+    padding-top: 60px;
+  }
+
+  .about-images,
+  .course-lead,
+  .form {
+    margin-top: 40px;
+  }
+}
+
+
+/* ---------- 480px以下：スマホ ---------- */
+@media (max-width: 480px) {
+
+  .mainvisual {
+    height: 280px;
+  }
+
+  .mv-main {
+    font-size: 22px;
+  }
+
+  .mv-sub {
+    font-size: 14px;
+  }
+
+  .ttl {
+    font-size: 20px;
+    /* ★ 名前を1つにまとめた効果がここに出ている。
+       以前は .ttl-en, .ttl-lg と2つ並べて書く必要があった */
+  }
+
+  .course-body h3 {
+    font-size: 20px;
+  }
+
+  /* NEWS：カードを縦1列にする */
+  .news-item {
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;              /* ボタンを横いっぱいに。スマホは押しやすさ優先 */
+  }
+
+  .about-images img {
+    height: 140px;
+  }
+}

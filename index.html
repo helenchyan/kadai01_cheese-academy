@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<!-- ↑ 「これはHTML5の文書です」という宣言。1行目に必ず書く。無いとブラウザが古い解釈モードになる -->
+
+<html lang="ja">
+<!-- lang="ja" ＝ 日本語のページ。読み上げソフトや翻訳機能がこれを見る -->
+
+<head>
+  <!-- head の中は画面に表示されない。ブラウザへの指示を書く場所 -->
+
+  <meta charset="UTF-8">
+  <!-- 文字コードの指定。これが無いと日本語が文字化けする -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- スマホで見たときの横幅の基準。今回はPC幅固定だが、書いておく -->
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- 古いIE向けの指定。雛形に入っていたのでそのまま -->
+
+  <title>チーズアカデミー</title>
+  <!-- ブラウザのタブに出る文字。検索結果の見出しにもなる -->
+
+  <link rel="stylesheet" href="css/reset.css">
+  <!-- ブラウザが勝手に付ける初期スタイルを消すCSS。先に読む -->
+
+  <link rel="stylesheet" href="css/style.css">
+  <!-- 自分で書くCSS。★後に読む。CSSは後に書いたほうが勝つので、順番を逆にすると reset に消される -->
+</head>
+
+<body>
+  <!-- body の中が、画面に表示される中身 -->
+
+  <div class="wrap">
+    <!-- ページ全体を1つで包む箱。仕様書の指定。
+         ここには幅を付けていない。ABOUTの画像帯・COURSEの行・地図を
+         画面幅いっぱいに広げたいため。幅1200pxは .inner で作る -->
+
+
+    <!-- ============================================================
+         ヘッダー（ロゴ ＋ ナビ）
+         仕様書で <header class="header"> を使うよう指定されている
+         ============================================================ -->
+    <header class="header">
+      <div class="header-inner">
+        <!-- ↑ この箱に display:flex を付けて、ロゴとナビを左右に離す。
+               header 自体ではなく中に箱を1枚入れるのは、
+               背景色は画面幅いっぱい・中身は1200px、を両立させるため -->
+
+        <h1 class="logo"><img src="img/header_logo.png" alt="Cheese ACADEMY TOKYO"></h1>
+        <!-- ロゴは画像だが h1。文字が読めない代わりに alt に社名を書く。
+             alt ＝ 画像が出ないときに表示される文字。読み上げソフトもこれを読む -->
+
+        <nav class="nav">
+          <!-- nav ＝ ナビゲーション（メニュー）であることを示すタグ -->
+          <ul>
+            <!-- メニューは「項目の並び」なので ul（箇条書き）で書くのが定石。
+                 li は初期状態では縦に積まれる。CSS側で ul に display:flex を付けて横並びにする -->
+            <li><a href="#about">ABOUT</a></li>
+            <!-- href="#about" ＝ 同じページ内の id="about" の場所へ飛ぶ。
+                 「#」はページ内リンクの印 -->
+            <li><a href="#course">COURSE</a></li>
+            <li><a href="#news">NEWS</a></li>
+            <li><a href="#access">ACCESS</a></li>
+            <li><a href="#contact">CONTACT</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <!-- /.header -->
+    <!-- ↑ 閉じタグの後に「どの箱が閉じたか」を書いておく。
+           div が増えてくると、どれがどれの閉じか分からなくなるため -->
+
+
+    <!-- ============================================================
+         メインビジュアル（写真の上に文字を乗せる）
+         写真は <img> ではなく CSS の background-image で置いている。
+         img だと上に文字を重ねるのが面倒なため
+         ============================================================ -->
+    <div class="mainvisual">
+      <div class="mainvisual-text">
+        <!-- 2行をひとかたまりにして、まとめて中央に置くための箱 -->
+        <p class="mv-main">セカイを変えるチーズを作ろう</p>
+        <p class="mv-sub">チーズ職人養成学校「チーズアカデミーTOKYO」</p>
+      </div>
+    </div>
+    <!-- /.mainvisual -->
+
+
+    <div class="content">
+      <!-- 仕様書の構成指定。header と footer の間の本文エリア -->
+
+
+      <!-- ============================================================
+           ABOUT
+           id="about" はヘッダーの <a href="#about"> の飛び先
+           ============================================================ -->
+      <section class="about" id="about">
+        <!-- section ＝ 意味のあるひとまとまり。div でもよいが、
+             section にしておくと「ここは1つの章」だと伝わる -->
+
+        <div class="inner">
+          <!-- ★ .inner が「幅1200pxで中央」の箱。各セクションで使い回す -->
+
+          <h2 class="ttl ttl--accent">ABOUT</h2>
+          <!-- 見本ではこの英字見出しが黄色。CSS側で色を付ける -->
+          <p class="ttl-ja">チーズアカデミーについて</p>
+
+          <div class="about-text">
+            <!-- 本文をまとめる箱。この箱に text-align:center を付けると
+                 中の p 全部が中央ぞろえになる（文字の指定は子に受け継がれる） -->
+            <p>チーズアカデミーは、チーズ職人養成学校です。</p>
+            <p>チーズの素晴らしさを、自給自足を通じて、できるだけ多くの人に知っていただきたい。<br>
+              そして、食卓にはいつもチーズがあった、あの頃の当たり前をこの手で取り戻したい。</p>
+            <!-- <br> ＝ 強制的に改行する。見本と同じ位置で折り返すために入れている -->
+            <p>そんな思いから、チーズ職人養成学校「チーズアカデミーTOKYO」は歩みを始めています。</p>
+            <p>卒業後、チーズ自給自足のバックアップはもちろんのこと、<br>
+              チーズ職人への就職・転職もサポートします。</p>
+          </div>
+        </div>
+        <!-- ★ ここで .inner を閉じている。下の画像帯を1200pxの枠の外に出すため -->
+
+        <div class="about-images">
+          <!-- 画像4枚の帯。.inner の外なので画面幅いっぱいに広がる。
+               CSS側で display:flex ＋ 各画像に flex:1 で4等分する -->
+          <img src="img/about_01.jpg" alt="">
+          <img src="img/about_02.jpg" alt="">
+          <img src="img/about_03.jpg" alt="">
+          <img src="img/about_04.jpg" alt="">
+          <!-- alt="" ＝ 意味を持たない飾りの画像。空にすると読み上げソフトが読み飛ばす。
+               alt属性そのものを省略するのは間違い。空で書く -->
+        </div>
+      </section>
+      <!-- /.about -->
+
+
+      <!-- ============================================================
+           COURSE
+           画像と文章が半分ずつ並ぶ行が3つ。2つめだけ左右が逆
+           ============================================================ -->
+      <section class="course" id="course">
+        <div class="inner">
+          <h2 class="ttl">COURSE</h2>
+          <!-- ★ 見出しは .ttl が基本形。ABOUT と NEWS だけ .ttl--accent を上乗せして黄色にしている。
+                 見本を拡大して色を測ったら、その2つだけ黄色だった。
+                 class を半角スペースで区切ると、2つのクラスを同時に付けられる -->
+
+          <p class="course-lead">未経験からでもスタートができるよう、カリキュラムは多くの専門家や<br>
+            現役チーズ職人のアドバイスのもと、作られました。</p>
+          <!-- ★ 見本に「コースについて」というサブ見出しは無い。リード文が直接続く -->
+        </div>
+
+        <!-- 1つめ：画像が左、文章が右 -->
+        <div class="course-row">
+          <!-- .inner の外。画面幅いっぱいで、画像50% / 文章50% に分ける -->
+          <div class="course-img"><img src="img/course_01.jpg" alt=""></div>
+          <div class="course-body">
+            <h3>本格的な農園を使った実地研修</h3>
+            <p>チーズアカデミーでは、本格的な農園を使った実地研修を
+              行うことができます。プロとして活躍するチーズ職人も
+              使用するような、広大で環境も整った農園を余すところ
+              なく使い、卒業時には本格的なチーズを自分の力で作れる
+              実践力の養成を目指します。</p>
+          </div>
+        </div>
+
+        <!-- 2つめ：文章が左、画像が右
+             ★ HTMLの順番は1つめ3つめと全く同じ（画像 → 文章）。
+                class に reverse を足しただけ。
+                CSS側の flex-direction: row-reverse が左右を入れ替える -->
+        <div class="course-row reverse">
+          <!-- class を半角スペースで区切ると、2つのクラスを同時に付けられる。
+               .course-row の指定を受け継いだうえで、.reverse の指定が上乗せされる -->
+          <div class="course-img"><img src="img/course_02.jpg" alt=""></div>
+          <div class="course-body">
+            <h3>必要な知識もしっかりと取得</h3>
+            <p>チーズ作りには、しっかりとした食に関する知識が
+              欠かせません。チーズアカデミーでは、一流講師陣による、
+              チーズ作りに必要ないろはを余すところなく学べます。
+              チーズそのものでなく、栄養学全般を学ぶことも
+              可能ですので、チーズ以外への展開も夢ではないでしょう。</p>
+          </div>
+        </div>
+
+        <!-- 3つめ：画像が左、文章が右（1つめと同じ） -->
+        <div class="course-row">
+          <div class="course-img"><img src="img/course_03.jpg" alt=""></div>
+          <div class="course-body">
+            <h3>卒業制作はティスティング審査あり</h3>
+            <p>チーズアカデミーでは最後の2ヶ月間で卒業制作を実施。
+              卒業制作として、チーズ作りを実際に行います。卒業後、
+              一般参加によるティスティング審査があるため、作り手の
+              目線だけでなく、消費者の目線から、卒業制作作品としての
+              チーズを、しっかりと評価いただくことができます。</p>
+          </div>
+        </div>
+      </section>
+      <!-- /.course -->
+
+
+      <!-- ============================================================
+           NEWS
+           同じ中身のカードが3枚。実際のサイトなら記事ごとに差し替わる
+           ============================================================ -->
+      <section class="news" id="news">
+        <div class="inner">
+          <h2 class="ttl ttl--accent">NEWS</h2>
+          <p class="ttl-ja">ニュース</p>
+
+          <div class="news-list">
+            <!-- この箱に display:flex を付けて、カード3枚を横に並べる -->
+
+            <div class="news-item">
+              <img src="img/news_img.jpg" alt="">
+              <p class="news-date">2016/11/18</p>
+              <p class="news-body">チーズアカデミー卒業生のコスゲさんによる
+                チーズだけをふんだんに使用した話題のピザ屋
+                「Kosuge Pizza」が渋谷でオープンしました！</p>
+            </div>
+
+            <div class="news-item">
+              <img src="img/news_img.jpg" alt="">
+              <p class="news-date">2016/11/18</p>
+              <p class="news-body">チーズアカデミー卒業生のコスゲさんによる
+                チーズだけをふんだんに使用した話題のピザ屋
+                「Kosuge Pizza」が渋谷でオープンしました！</p>
+            </div>
+
+            <div class="news-item">
+              <img src="img/news_img.jpg" alt="">
+              <p class="news-date">2016/11/18</p>
+              <p class="news-body">チーズアカデミー卒業生のコスゲさんによる
+                チーズだけをふんだんに使用した話題のピザ屋
+                「Kosuge Pizza」が渋谷でオープンしました！</p>
+            </div>
+          </div>
+
+          <div class="news-more">
+            <!-- ボタンを中央に置くための箱。この箱に text-align:center を付ける -->
+            <a href="#" class="btn">More</a>
+            <!-- href="#" ＝ 飛び先なし。今回は見た目だけでよいので空でよい -->
+          </div>
+        </div>
+      </section>
+      <!-- /.news -->
+
+
+      <!-- ============================================================
+           ACCESS（地図 ＋ 会社情報）
+           ============================================================ -->
+      <section class="access" id="access">
+        <div class="inner">
+          <h2 class="ttl">Access</h2>
+          <p class="ttl-ja">会社情報</p>
+        </div>
+
+        <div class="map">
+          <!-- ★ iframe ＝ ページの中に別のページを埋め込む枠。
+                 地図のような「他所のサービスの画面」を載せるときに使う。
+                 Googleマップの「共有」→「地図を埋め込む」で出るコードに差し替えてよい -->
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.3923459345215!2d139.71127647505998!3d35.66734013073816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188d0012f10e49%3A0xd25b5586f6b49e2b!2z6Z2S5pyL44OT44Or!5e0!3m2!1sja!2sjp!4v1792916671220!5m2!1sja!2sjp"
+            title="チーズアカデミーTOKYOの地図"
+            allowfullscreen loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <!-- ★ 残してある2つは「機能」の属性で、CSSには書けない。
+                 allowfullscreen … 全画面表示を許可する
+                 loading="lazy"  … 画面に近づくまで読み込まない。ページが軽くなる
+                 title           … 読み上げソフト用。iframe には付けるのが望ましい
+
+             ★ Googleのコピペに付いてくる width / height / style="border:0" は消した。
+                見た目の指定なので CSS（.map iframe）に移してある。
+                特に style="..." はインラインCSSといって、
+                クラスの指定より優先される。HTMLに残すとCSSから変更できなくなる -->
+        </div>
+
+        <div class="inner">
+          <!-- ★ 地図を画面幅いっぱいにするため、.inner を一度閉じて開き直している -->
+          <dl class="access-list">
+            <!-- dl ＝ 「項目名と内容」の組み合わせを並べるタグ。
+                 dt（項目名）と dd（内容）が交互に入る。
+                 会社情報・スペック表・用語集などはこれで書くのが定石。
+                 CSS側で flex-wrap を使って2列に折り返す -->
+            <dt>学校名</dt>
+            <dd>チーズアカデミーTOKYO</dd>
+            <dt>事務所所在地</dt>
+            <dd>〒107-0061 東京都港区北青山3-5-6 青朋ビル2F</dd>
+            <dt>TEL</dt>
+            <dd>03-5413-5045</dd>
+            <dt>FAX</dt>
+            <dd>03-5413-5046</dd>
+            <dt>MAIL</dt>
+            <dd>dummy@cheeseacademy.tokyo</dd>
+          </dl>
+        </div>
+      </section>
+      <!-- /.access -->
+
+
+      <!-- ============================================================
+           CONTACT（フォーム）
+           仕様書で「もっとも大変かも」と言われている箇所
+           ============================================================ -->
+      <section class="contact" id="contact">
+        <div class="inner">
+          <h2 class="ttl">CONTACT</h2>
+          <p class="ttl-ja">説明会お申し込み・お問い合わせ</p>
+
+          <p class="contact-lead">ぜひ1度、足を運んでみませんか。説明会は随時開催中。<br>
+            その他、お問い合わせもお気軽にどうぞ。お待ちしております。</p>
+          <p class="contact-note">※チーズアカデミーは実際には存在しません。<br>
+            間違っても問い合わせしないようお願いいたします。</p>
+
+          <form class="form" action="">
+            <!-- form ＝ 入力欄をまとめるタグ。
+                 action ＝ 送信先のURL。今回は提出がスクショなので空でよい。
+                 実際に動かすにはサーバ側の処理（PHPなど）が要る。教程6で習う -->
+
+            <div class="form-row">
+              <!-- 1行＝1つのFlexbox。左にラベル、右に入力欄 -->
+              <label for="name">名前</label>
+              <input type="text" id="name" name="name">
+              <!-- ★ label の for と input の id を同じ文字にすると、
+                     ラベルの文字をクリックしたときに入力欄へカーソルが入る。
+                     name ＝ 送信するときのデータの名前。サーバ側で使う -->
+            </div>
+
+            <div class="form-row">
+              <label for="kana">カナ</label>
+              <input type="text" id="kana" name="kana">
+            </div>
+
+            <div class="form-row">
+              <label for="mail">メールアドレス</label>
+              <input type="email" id="mail" name="mail">
+              <!-- type="email" にすると、@が無いときにブラウザが警告を出す。
+                   スマホだとキーボードが@入りのものに変わる -->
+            </div>
+
+            <div class="form-row">
+              <label for="kikkake">チーズアカデミーを知ったきっかけ</label>
+              <select id="kikkake" name="kikkake">
+                <!-- select ＝ プルダウン。選択肢は配布テキストの5つ -->
+                <option value="">選択してください</option>
+                <option value="google">google検索</option>
+                <option value="sns">SNS</option>
+                <option value="syokai">紹介</option>
+                <option value="toori">たまたま通りかかった</option>
+                <option value="other">その他</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <span class="form-label">志望動機</span>
+              <!-- ★ ここだけ label ではなく span。
+                     label は「1つの入力欄」と結びつけるタグなので、
+                     複数のチェックボックスの見出しには使わない -->
+              <div class="checks">
+                <!-- CSS側で flex-direction: column にして縦に積む -->
+                <label><input type="checkbox" name="doki" value="kigyo">起業をしたい</label>
+                <!-- ★ チェックボックスは label で囲む書き方。
+                       囲めば for と id は要らない。文字をクリックしても選べる -->
+                <label><input type="checkbox" name="doki" value="syusyoku">チーズ系企業に就職・転職したい</label>
+                <label><input type="checkbox" name="doki" value="shigoto">チーズと関わる仕事をしており、仕事に生かしたい</label>
+                <label><input type="checkbox" name="doki" value="kyoyo">チーズの教養を身につけたい</label>
+                <!-- checkbox は複数選べる。1つだけ選ばせたいときは type="radio" にする -->
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="detail">詳細</label>
+              <textarea id="detail" name="detail" rows="6"></textarea>
+              <!-- textarea ＝ 複数行の入力欄。
+                   ★ 閉じタグが要る（input は要らない）。
+                   rows ＝ 初期の行数。中に文字を書くと初期値として表示されてしまうので空にする -->
+            </div>
+
+            <div class="form-submit">
+              <button type="submit" class="btn">送信</button>
+              <!-- type="submit" ＝ 押すと送信する。
+                   見た目は More ボタンと同じ .btn を使い回している -->
+            </div>
+          </form>
+        </div>
+      </section>
+      <!-- /.contact -->
+
+    </div>
+    <!-- /.content -->
+
+
+    <!-- ============================================================
+         フッター
+         仕様書で <footer class="footer"> を使うよう指定されている
+         ============================================================ -->
+    <footer class="footer">
+      <p>copyrights 2016 Cheeese Academy Tokyo All RIghts Reserved.</p>
+      <!-- 配布テキストのまま。Cheeese（eが3つ）と RIghts（Iが大文字）は
+           元データの誤字だが、勝手に直さない -->
+    </footer>
+    <!-- /.footer -->
+
+  </div>
+  <!-- /.wrap -->
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <!-- jQuery ＝ JavaScriptを短く書けるようにする道具。教程1で使う -->
+  <script src="js/main.js"></script>
+  <!-- ★ script は body の一番下に置く。
+         上に置くと、HTMLを読む前にJSが走って「要素が見つからない」エラーになる -->
+</body>
+
+</html>
